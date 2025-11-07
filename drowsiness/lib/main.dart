@@ -6,8 +6,10 @@ import 'package:camera/camera.dart';
 import 'package:http/http.dart' as http;
 import 'package:audioplayers/audioplayers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
+  await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
   final cameras = await availableCameras();
   final frontCamera = cameras.firstWhere(
@@ -25,6 +27,7 @@ class DrowsyGuardApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'DrowsyGuard',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
@@ -93,7 +96,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final userJson = prefs.getString('current_user');
-      
+
       if (userJson != null) {
         final userData = jsonDecode(userJson);
         setState(() {
@@ -167,8 +170,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  static const String serverUrl = 'http://192.168.18.72:8000';
-  
+  static String serverUrl = dotenv.env['SERVER_URL']!;
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -245,7 +247,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [Colors.blue.shade400, Colors.blue.shade600],
+                              colors: [
+                                Colors.blue.shade400,
+                                Colors.blue.shade600
+                              ],
                             ),
                             shape: BoxShape.circle,
                           ),
@@ -256,7 +261,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         const SizedBox(height: 24),
-                        
+
                         // Title
                         const Text(
                           'DrowsyGuard',
@@ -304,8 +309,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             labelText: 'Password',
                             prefixIcon: const Icon(Icons.lock_outline),
                             suffixIcon: IconButton(
-                              icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
-                              onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                              icon: Icon(_obscurePassword
+                                  ? Icons.visibility
+                                  : Icons.visibility_off),
+                              onPressed: () => setState(
+                                  () => _obscurePassword = !_obscurePassword),
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
@@ -334,10 +342,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             child: _isLoading
-                                ? const CircularProgressIndicator(color: Colors.white)
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white)
                                 : const Text(
                                     'Login',
-                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold),
                                   ),
                           ),
                         ),
@@ -358,7 +369,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: RichText(
                             text: TextSpan(
                               text: "Don't have an account? ",
-                              style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+                              style: TextStyle(
+                                  color: Colors.grey.shade600, fontSize: 16),
                               children: [
                                 TextSpan(
                                   text: 'Sign up',
@@ -401,8 +413,7 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  static const String serverUrl = 'http://192.168.18.72:8000';
-  
+  static String serverUrl = dotenv.env['SERVER_URL']!;
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -512,7 +523,10 @@ class _SignupScreenState extends State<SignupScreen> {
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [Colors.green.shade400, Colors.green.shade600],
+                              colors: [
+                                Colors.green.shade400,
+                                Colors.green.shade600
+                              ],
                             ),
                             shape: BoxShape.circle,
                           ),
@@ -597,8 +611,11 @@ class _SignupScreenState extends State<SignupScreen> {
                             labelText: 'Password',
                             prefixIcon: const Icon(Icons.lock_outline),
                             suffixIcon: IconButton(
-                              icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
-                              onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                              icon: Icon(_obscurePassword
+                                  ? Icons.visibility
+                                  : Icons.visibility_off),
+                              onPressed: () => setState(
+                                  () => _obscurePassword = !_obscurePassword),
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
@@ -624,8 +641,12 @@ class _SignupScreenState extends State<SignupScreen> {
                             labelText: 'Confirm Password',
                             prefixIcon: const Icon(Icons.lock_outline),
                             suffixIcon: IconButton(
-                              icon: Icon(_obscureConfirmPassword ? Icons.visibility : Icons.visibility_off),
-                              onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                              icon: Icon(_obscureConfirmPassword
+                                  ? Icons.visibility
+                                  : Icons.visibility_off),
+                              onPressed: () => setState(() =>
+                                  _obscureConfirmPassword =
+                                      !_obscureConfirmPassword),
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
@@ -671,10 +692,13 @@ class _SignupScreenState extends State<SignupScreen> {
                               ),
                             ),
                             child: _isLoading
-                                ? const CircularProgressIndicator(color: Colors.white)
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white)
                                 : const Text(
                                     'Create Account',
-                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold),
                                   ),
                           ),
                         ),
@@ -686,7 +710,8 @@ class _SignupScreenState extends State<SignupScreen> {
                           child: RichText(
                             text: TextSpan(
                               text: "Already have an account? ",
-                              style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+                              style: TextStyle(
+                                  color: Colors.grey.shade600, fontSize: 16),
                               children: [
                                 TextSpan(
                                   text: 'Login',
@@ -727,10 +752,10 @@ class MainNavigationScreen extends StatefulWidget {
   final CameraDescription camera;
   final User user;
   final VoidCallback onLogout;
-  
+
   const MainNavigationScreen({
-    super.key, 
-    required this.camera, 
+    super.key,
+    required this.camera,
     required this.user,
     required this.onLogout,
   });
@@ -748,11 +773,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     final screens = [
       DashboardScreen(
         key: _dashboardKey,
-        user: widget.user, 
+        user: widget.user,
         onLogout: widget.onLogout,
       ),
       DrowsinessDetectionScreen(
-        camera: widget.camera, 
+        camera: widget.camera,
         user: widget.user,
         onDetectionComplete: () {
           print('Detection completed callback called');
@@ -802,15 +827,16 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 class DashboardScreen extends StatefulWidget {
   final User user;
   final VoidCallback onLogout;
-  
-  const DashboardScreen({super.key, required this.user, required this.onLogout});
+
+  const DashboardScreen(
+      {super.key, required this.user, required this.onLogout});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  static const String serverUrl = 'http://192.168.18.72:8000';
+  static String serverUrl = dotenv.env['SERVER_URL']!;
   Map<String, dynamic>? _dashboardData;
   bool _isLoading = true;
 
@@ -823,7 +849,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Future<void> _loadDashboardData() async {
     print('Loading dashboard data for user ${widget.user.id}');
     setState(() => _isLoading = true);
-    
+
     try {
       final response = await http.get(
         Uri.parse('$serverUrl/users/${widget.user.id}/dashboard'),
@@ -846,7 +872,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     } catch (e) {
       print('Dashboard error: $e');
     }
-    
+
     setState(() => _isLoading = false);
   }
 
@@ -951,12 +977,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     // Quick Actions
                     Card(
                       child: ListTile(
-                        leading: const Icon(Icons.play_circle_filled, color: Colors.green, size: 40),
-                        title: const Text('Start Detection', style: TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: const Text('Begin monitoring your drowsiness'),
+                        leading: const Icon(Icons.play_circle_filled,
+                            color: Colors.green, size: 40),
+                        title: const Text('Start Detection',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle:
+                            const Text('Begin monitoring your drowsiness'),
                         trailing: const Icon(Icons.arrow_forward_ios),
                         onTap: () {
-                          final navState = context.findAncestorStateOfType<_MainNavigationScreenState>();
+                          final navState = context.findAncestorStateOfType<
+                              _MainNavigationScreenState>();
                           if (navState != null) {
                             navState.setState(() => navState._currentIndex = 1);
                           }
@@ -969,7 +999,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     // Recent Sessions
                     const Text(
                       'Recent Sessions',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
                     ..._buildRecentSessions(),
@@ -980,7 +1011,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
+  Widget _buildStatCard(
+      String title, String value, IconData icon, Color color) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -1012,7 +1044,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   List<Widget> _buildRecentSessions() {
     final sessions = _dashboardData?['recent_sessions'] as List? ?? [];
-    
+
     if (sessions.isEmpty) {
       return [
         Card(
@@ -1049,7 +1081,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return sessions.map<Widget>((session) {
       final alerts = session['alerts'] ?? 0;
       final totalDetections = session['total_detections'] ?? 0;
-      
+
       return Card(
         margin: const EdgeInsets.only(bottom: 8),
         child: ListTile(
@@ -1095,28 +1127,29 @@ class DrowsinessDetectionScreen extends StatefulWidget {
   final CameraDescription camera;
   final User user;
   final VoidCallback? onDetectionComplete;
-  
+
   const DrowsinessDetectionScreen({
-    super.key, 
-    required this.camera, 
+    super.key,
+    required this.camera,
     required this.user,
     this.onDetectionComplete,
   });
 
   @override
-  State<DrowsinessDetectionScreen> createState() => _DrowsinessDetectionScreenState();
+  State<DrowsinessDetectionScreen> createState() =>
+      _DrowsinessDetectionScreenState();
 }
 
-class _DrowsinessDetectionScreenState extends State<DrowsinessDetectionScreen> 
+class _DrowsinessDetectionScreenState extends State<DrowsinessDetectionScreen>
     with TickerProviderStateMixin {
-  static const String serverUrl = 'http://192.168.18.72:8000'; 
-  
+  static String serverUrl = dotenv.env['SERVER_URL']!;
+
   late CameraController _cameraController;
   late Future<void> _initializeControllerFuture;
   late AudioPlayer _audioPlayer;
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
-  
+
   bool _isDetecting = false;
   bool _isDrowsy = false;
   bool _isProcessing = false; // Add flag to prevent overlapping requests
@@ -1126,7 +1159,7 @@ class _DrowsinessDetectionScreenState extends State<DrowsinessDetectionScreen>
   int _detectionCount = 0;
   int _drowsyCount = 0;
   int? _currentSessionId;
-  
+
   Timer? _detectionTimer;
 
   @override
@@ -1205,10 +1238,10 @@ class _DrowsinessDetectionScreenState extends State<DrowsinessDetectionScreen>
           Uri.parse('$serverUrl/sessions/$_currentSessionId/end'),
           headers: {'Content-Type': 'application/json'},
         );
-        
+
         print('End session response: ${response.statusCode}');
         print('End session body: ${response.body}');
-        
+
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body);
           if (data['success']) {
@@ -1216,13 +1249,14 @@ class _DrowsinessDetectionScreenState extends State<DrowsinessDetectionScreen>
             widget.onDetectionComplete?.call();
           }
         } else {
-          print('Failed to end session: ${response.statusCode} - ${response.body}');
+          print(
+              'Failed to end session: ${response.statusCode} - ${response.body}');
         }
       } catch (e) {
         print('Failed to end session: $e');
       }
     }
-    
+
     setState(() {
       _isDetecting = false;
       _isDrowsy = false;
@@ -1233,23 +1267,25 @@ class _DrowsinessDetectionScreenState extends State<DrowsinessDetectionScreen>
 
   Future<void> _captureAndAnalyze() async {
     // Skip if already processing or camera not ready
-    if (!_cameraController.value.isInitialized || !_isDetecting || _isProcessing) return;
+    if (!_cameraController.value.isInitialized ||
+        !_isDetecting ||
+        _isProcessing) return;
 
     _isProcessing = true;
 
     try {
       final image = await _cameraController.takePicture();
       final result = await _sendImageToBackend(image.path);
-      
+
       if (result != null) {
         setState(() {
           _lastPrediction = result['prediction'] ?? 'unknown';
           _lastConfidence = (result['confidence'] ?? 0.0).toDouble();
           _detectionCount++;
-          
-          _isDrowsy = _lastPrediction.toLowerCase().contains('drowsy') && 
-                     _lastConfidence > 0.6; // Reduced threshold for faster response
-          
+
+          _isDrowsy = _lastPrediction.toLowerCase().contains('drowsy') &&
+              _lastConfidence > 0.6; // Reduced threshold for faster response
+
           if (_isDrowsy) {
             _drowsyCount++;
             _currentStatus = 'DROWSINESS DETECTED!';
@@ -1271,39 +1307,39 @@ class _DrowsinessDetectionScreenState extends State<DrowsinessDetectionScreen>
 
   Future<void> _handleDrowsinessDetection() async {
     _pulseController.repeat(reverse: true);
-    
+
     try {
       await _audioPlayer.play(AssetSource('sounds/alarm.mp3'));
     } catch (e) {
       print('Audio error: $e');
     }
-    
+
     _showDrowsinessAlert();
   }
 
   Future<Map<String, dynamic>?> _sendImageToBackend(String imagePath) async {
     try {
-      String endpoint = _currentSessionId != null 
+      String endpoint = _currentSessionId != null
           ? '$serverUrl/detect/$_currentSessionId'
           : '$serverUrl/predict_frame';
-      
+
       var request = http.MultipartRequest('POST', Uri.parse(endpoint));
       request.files.add(await http.MultipartFile.fromPath('file', imagePath));
-      
+
       // Reduced timeout for faster response
       final streamedResponse = await request.send().timeout(
-        const Duration(seconds: 3), // Reduced from 10 to 3 seconds
-      );
-      
+            const Duration(seconds: 3), // Reduced from 10 to 3 seconds
+          );
+
       final response = await http.Response.fromStream(streamedResponse);
-      
+
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
         if (jsonResponse['success'] == true) {
           return jsonResponse['data'];
         }
       }
-      
+
       return null;
     } catch (e) {
       print('Backend error: $e');
@@ -1313,7 +1349,7 @@ class _DrowsinessDetectionScreenState extends State<DrowsinessDetectionScreen>
 
   void _showDrowsinessAlert() {
     if (!mounted) return;
-    
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -1396,7 +1432,7 @@ class _DrowsinessDetectionScreenState extends State<DrowsinessDetectionScreen>
                     ),
                   ),
                 ),
-                
+
                 // Status Card
                 Card(
                   margin: const EdgeInsets.all(16),
@@ -1422,7 +1458,9 @@ class _DrowsinessDetectionScreenState extends State<DrowsinessDetectionScreen>
                                   const Text('Detections'),
                                   Text(
                                     _detectionCount.toString(),
-                                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                    style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               ),
@@ -1431,16 +1469,24 @@ class _DrowsinessDetectionScreenState extends State<DrowsinessDetectionScreen>
                                   const Text('Alerts'),
                                   Text(
                                     _drowsyCount.toString(),
-                                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                    style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               ),
                               Column(
                                 children: [
-                                  Text(_isProcessing ? 'Processing...' : 'Ready'),
+                                  Text(_isProcessing
+                                      ? 'Processing...'
+                                      : 'Ready'),
                                   Text(
-                                    _lastConfidence > 0 ? '${(_lastConfidence * 100).toStringAsFixed(0)}%' : '-',
-                                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                    _lastConfidence > 0
+                                        ? '${(_lastConfidence * 100).toStringAsFixed(0)}%'
+                                        : '-',
+                                    style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               ),
@@ -1451,7 +1497,7 @@ class _DrowsinessDetectionScreenState extends State<DrowsinessDetectionScreen>
                     ),
                   ),
                 ),
-                
+
                 // Control Buttons
                 Padding(
                   padding: const EdgeInsets.all(16),
@@ -1461,14 +1507,17 @@ class _DrowsinessDetectionScreenState extends State<DrowsinessDetectionScreen>
                         width: double.infinity,
                         height: 56,
                         child: ElevatedButton(
-                          onPressed: _isDetecting ? _stopDetection : _startDetection,
+                          onPressed:
+                              _isDetecting ? _stopDetection : _startDetection,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: _isDetecting ? Colors.red : Colors.green,
+                            backgroundColor:
+                                _isDetecting ? Colors.red : Colors.green,
                             foregroundColor: Colors.white,
                           ),
                           child: Text(
                             _isDetecting ? 'Stop Detection' : 'Start Detection',
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
